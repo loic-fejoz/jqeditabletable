@@ -17,18 +17,18 @@
 	function makeNewEditableCell(theTable, tableEditableOptions, theColModel) {
 		var colEditableOptions = theColModel['editableOptions'] ? theColModel['editableOptions']
 				: {};
-		var options = $.extend({}, tableEditableOptions, colEditableOptions)
+		var options = $.extend({}, tableEditableOptions, colEditableOptions);
 		var userCallback = options['callback'];
 		options['callback'] = function(value, settings) {
 			if (userCallback) {
 				userCallback.apply(value, settings);
 			}
-			var onChange = theTable.data('jqTable')['onChange'];
+			var onChange = theTable.data('jqEditableTable')['onChange'];
 			if (onChange) {
 				onChange.apply(theTable);
 			}
 			return value;
-		}
+		};
 		var newCell = $('<td>').editable(function(value, settings) {
 			return value;
 		}, options);
@@ -80,17 +80,16 @@
 				var colIndex;
 				for (colIndex in colModels) {
 					var aColModel = colModels[colIndex];
-					this.jqTable('addColumn', aColModel);
+					this.jqEditableTable('addColumn', aColModel);
 				}
-				;
 			}
-			this.data('jqTable', options);
+			this.data('jqEditableTable', options);
 			return this;
 		},
 		getTHead : function() {
 			// Get or create thead
 			var theads = this.children('thead');
-			if (theads.length == 0) {
+			if (theads.length === 0) {
 				var newTHead = $('<thead>');
 				theads = newTHead;
 				this.append(newTHead);
@@ -98,10 +97,10 @@
 			return theads;
 		},
 		getTHeadRow : function() {
-			var theads = this.jqTable('getTHead');
+			var theads = this.jqEditableTable('getTHead');
 			// Get or create thead/tr
 			var thRow = theads.children('tr');
-			if (thRow.length == 0) {
+			if (thRow.length === 0) {
 				var newThRow = $('<tr>');
 				thRow = newThRow;
 				theads.append(newThRow);
@@ -111,7 +110,7 @@
 		getTBody : function() {
 			// Get or create tbody
 			var tbodies = this.children('tbody');
-			if (tbodies.length == 0) {
+			if (tbodies.length === 0) {
 				var newTBody = $('<tbody>');
 				tbodies = newTBody;
 				this.append(newTBody);
@@ -119,7 +118,7 @@
 			return tbodies;
 		},
 		addColumn : function addColumn(aColModel) {
-			var thRow = this.jqTable('getTHeadRow');
+			var thRow = this.jqEditableTable('getTHeadRow');
 			// Create thead/tr/th
 			var colLabel = aColModel['label'] === undefined ? aColModel['name']
 					: aColModel['label'];
@@ -127,31 +126,31 @@
 
 			// Add td to all existing rows
 			// but first assert tbody exist.
-			var tbodies = this.jqTable('getTBody');
+			var tbodies = this.jqEditableTable('getTBody');
 			var allTRs = tbodies.children('tr');
-			if (allTRs.length != 0) {
+			if (allTRs.length !== 0) {
 				allTRs.append(makeNewEditableCell(this,
-						this.data('jqTable')['editableOptions'], aColModel));
+						this.data('jqEditableTable')['editableOptions'], aColModel));
 			}
 			return this;
 		},
 		getColumnSize : function() {
-			return this.jqTable('getTHeadRow').children('th').length;
+			return this.jqEditableTable('getTHeadRow').children('th').length;
 		},
 		addRow : function(someData) {
-			var tbodies = this.jqTable('getTBody');
-			var editableOptions = this.data('jqTable')['editableOptions'];
+			var tbodies = this.jqEditableTable('getTBody');
+			var editableOptions = this.data('jqEditableTable')['editableOptions'];
 			if (Object.prototype.toString.call(someData) === '[object Array]') {
 				var colIndex;
 				var theColModel;
-				var colModels = this.data('jqTable')['colModel'];
+				var colModels = this.data('jqEditableTable')['colModel'];
 				var newRow = $('<tr>');
 				for (colIndex in someData) {
 					theColModel = colModels[colIndex];
 					newRow.append(makeNewEditableCell(this, editableOptions,
 							theColModel).html(someData[colIndex]));
 				}
-				var columnSize = this.jqTable('getColumnSize');
+				var columnSize = this.jqEditableTable('getColumnSize');
 				if (colIndex === undefined) {
 					colIndex = 0;
 				} else {
@@ -166,13 +165,13 @@
 			}
 		},
 		getColumnsName : function() {
-			return this.data('jqTable')['colModel'].map(function(aColModel) {
+			return this.data('jqEditableTable')['colModel'].map(function(aColModel) {
 				return aColModel['name'];
 			});
 		},
 		getRowData : function() {
-			var columns = this.jqTable('getColumnsName');
-			var tbodies = this.jqTable('getTBody');
+			var columns = this.jqEditableTable('getColumnsName');
+			var tbodies = this.jqEditableTable('getTBody');
 			var allTRs = tbodies.children('tr');
 			var data = [];
 			allTRs.each(function(index, value) {
@@ -185,8 +184,8 @@
 			return data;
 		},
 		toCSV : function() {
-			var columns = this.jqTable('getColumnsName');
-			var data = this.jqTable('getRowData');
+			var columns = this.jqEditableTable('getColumnsName');
+			var data = this.jqEditableTable('getRowData');
 			var csv = "";
 			var i;
 			for (i = 0; i < columns.length; i++) {
@@ -210,16 +209,16 @@
 			}
 			return csv;
 		}
-	}
+	};
 
-	$.fn.jqTable = function(method) {
+	$.fn.jqEditableTable = function(method) {
 		if (methods[method]) {
 			return methods[method].apply(this, Array.prototype.slice.call(
 					arguments, 1));
 		} else if (typeof method === 'object' || !method) {
 			return methods.init.apply(this, arguments);
 		} else {
-			$.error('Method ' + method + ' does not exist on jQuery.jqTable');
+			$.error('Method ' + method + ' does not exist on jQuery.jqEditableTable');
 		}
-	}
-})(jQuery)
+	};
+})(jQuery);
