@@ -153,7 +153,7 @@
 		getColumnSize : function() {
 			return this.jqEditableTable('getTHeadRow').children('th').length;
 		},
-		addRow : function(someData) {
+		addRow : function addRow(someData) {
 			var tbodies = this.jqEditableTable('getTBody');
 			var editableOptions = this.data('jqEditableTable')['editableOptions'];
 			if (Object.prototype.toString.call(someData) === '[object Array]') {
@@ -178,6 +178,10 @@
 							theColModel));
 				}
 				tbodies.append(newRow);
+			} else if (Object.prototype.toString.call(someData) === '[object Object]') {
+				this.jqEditableTable('addRow', this.data('jqEditableTable')['colModel'].map(function(aColModel) {
+					return someData[aColModel.name] ? someData[aColModel.name] : null;
+				}));
 			}
 		},
 		getColumnsName : function() {
