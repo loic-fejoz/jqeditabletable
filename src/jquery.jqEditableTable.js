@@ -118,6 +118,22 @@
 			return tbodies;
 		},
 		addColumn : function addColumn(aColModel) {
+			// Append the new column model into colModel list
+			var data = this.data('jqEditableTable');
+			if (data) {
+				var colModels = data['colModel'];
+				var colIndex;
+				for(colIndex in colModels) {
+					if (colModels[colIndex].name === aColModel.name) {
+						// There is already such a column thus do not add it just update colModel
+						colModels[colIndex] = $.extend({}, aColModel, colModels[colIndex]);
+						this.data('jqEditableTable')['colModel'] = colModels;
+						return this;
+					}
+				}
+				colModels.push(aColModel);
+			}
+			
 			var thRow = this.jqEditableTable('getTHeadRow');
 			// Create thead/tr/th
 			var colLabel = aColModel['label'] === undefined ? aColModel['name']
