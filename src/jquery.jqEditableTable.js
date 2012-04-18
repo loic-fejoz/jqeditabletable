@@ -145,8 +145,11 @@
 			var tbodies = this.jqEditableTable('getTBody');
 			var allTRs = tbodies.children('tr');
 			if (allTRs.length !== 0) {
-				allTRs.append(makeNewEditableCell(this,
-						this.data('jqEditableTable')['editableOptions'], aColModel));
+				var editableOptions = this.data('jqEditableTable')['editableOptions'];
+				allTRs.each(function(index, value) {
+					$(value).append(makeNewEditableCell(this,
+						editableOptions, aColModel));
+				});
 			}
 			return this;
 		},
