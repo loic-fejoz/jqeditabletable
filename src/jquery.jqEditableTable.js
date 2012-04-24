@@ -29,15 +29,16 @@
 			}
 			return value;
 		};
-		var newCell = $('<td>').editable(function(value, settings) {
+		var newCell = $('<td>');
+		newCell.editable(function(value, settings) {
 			return value;
 		}, options);
-		// Handle keypress to navigate into the table
-		newCell.keypress(function(e) {
-			var code = e.keyCode ? e.keyCode : e.which;
+		// Handle keydown to navigate into the table
+		newCell.keydown(function(e) {
+			var code = e.which;
 			var cellToEditAfter = undefined;
 			switch (code) {
-			case 9: 
+			case 9: // DOM_VK_TAB
 				if (e.shiftKey) { // backward tabulation
 					// input -> form -> td -> previous td
 					cellToEditAfter = e.target.parentNode.parentNode.previousSibling;
@@ -54,12 +55,12 @@
 					}
 				}
 				break;
-			case 38: // handle up
+			case 38: // DOM_VK_UP handle up
 				var thisIndex = getChildrenIndex(e.target.parentNode.parentNode);
 				// input -> form -> td -> tr -> previous tr -> td with same index
 				cellToEditAfter = e.target.parentNode.parentNode.parentNode.previousSibling.children[thisIndex];
 				break;
-			case 40: // handle down
+			case 40: // DOM_VK_DOWN handle down
 				var thisIndex = getChildrenIndex(e.target.parentNode.parentNode);
 				// input -> form -> td -> tr -> next tr -> td with same index
 				cellToEditAfter = e.target.parentNode.parentNode.parentNode.nextSibling.children[thisIndex];
