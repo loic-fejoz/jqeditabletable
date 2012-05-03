@@ -35,41 +35,43 @@
 		}, options);
 		// Handle keydown to navigate into the table
 		newCell.keydown(function(e) {
-			var code = e.which;
-			var cellToEditAfter = undefined;
-			switch (code) {
-			case 9: // DOM_VK_TAB
-				if (e.shiftKey) { // backward tabulation
+			if (e.shiftKey) {
+				var code = e.which;
+				var cellToEditAfter = undefined;
+				switch (code) {
+				case 37: // DOM_VK_LEFT handle left
 					// input -> form -> td -> previous td
 					cellToEditAfter = e.target.parentNode.parentNode.previousSibling;
 					if (cellToEditAfter === null) {
 						var children = e.target.parentNode.parentNode.parentNode.previousSibling.children;
 						cellToEditAfter = children[children.length-1]; 
 					}
-				} else { //  forward tabulation
+					break;
+				case 38: // DOM_VK_UP handle up
+					var thisIndex = getChildrenIndex(e.target.parentNode.parentNode);
+					// input -> form -> td -> tr -> previous tr -> td with same
+					// index
+					cellToEditAfter = e.target.parentNode.parentNode.parentNode.previousSibling.children[thisIndex];
+					break;
+				case 39: // DOM_VK_RIGHT handle right
 					// input -> form -> td -> next td
 					cellToEditAfter = e.target.parentNode.parentNode.nextSibling;
 					if (cellToEditAfter === null) {
 						// input -> form -> td -> tr -> next tr -> first td
 						cellToEditAfter = e.target.parentNode.parentNode.parentNode.nextSibling.children[0];
 					}
+					break;
+				case 40: // DOM_VK_DOWN handle down
+					var thisIndex = getChildrenIndex(e.target.parentNode.parentNode);
+					// input -> form -> td -> tr -> next tr -> td with same index
+					cellToEditAfter = e.target.parentNode.parentNode.parentNode.nextSibling.children[thisIndex];
+					break;
 				}
-				break;
-			case 38: // DOM_VK_UP handle up
-				var thisIndex = getChildrenIndex(e.target.parentNode.parentNode);
-				// input -> form -> td -> tr -> previous tr -> td with same index
-				cellToEditAfter = e.target.parentNode.parentNode.parentNode.previousSibling.children[thisIndex];
-				break;
-			case 40: // DOM_VK_DOWN handle down
-				var thisIndex = getChildrenIndex(e.target.parentNode.parentNode);
-				// input -> form -> td -> tr -> next tr -> td with same index
-				cellToEditAfter = e.target.parentNode.parentNode.parentNode.nextSibling.children[thisIndex];
-				break;
-			}
-			if (cellToEditAfter) {
-				$(e.target).blur();
-				$(cellToEditAfter).click();
-				e.preventDefault();
+				if (cellToEditAfter) {
+					$(e.target).blur();
+					$(cellToEditAfter).click();
+					e.preventDefault();
+				}
 			}
 		});
 		return newCell;
@@ -126,7 +128,8 @@
 				var colIndex;
 				for(colIndex in colModels) {
 					if (colModels[colIndex].name === aColModel.name) {
-						// There is already such a column thus do not add it just update colModel
+						// There is already such a column thus do not add it
+						// just update colModel
 						colModels[colIndex] = $.extend({}, aColModel, colModels[colIndex]);
 						this.data('jqEditableTable')['colModel'] = colModels;
 						return this;
