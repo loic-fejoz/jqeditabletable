@@ -3,6 +3,8 @@
  * or focus. It shall convert back the input into cell on focus lost or key
  * navigation. Input type can be set on column.
  */
+/*jshint undef:true*/
+/*globals jQuery:true */
 (function($) {
 	"use strict";
 	function getChildrenIndex(child) {
@@ -15,15 +17,15 @@
 		return i;
 	}
 	function makeNewEditableCell(theTable, tableEditableOptions, theColModel) {
-		var colEditableOptions = theColModel['editableOptions'] ? theColModel['editableOptions']
+		var colEditableOptions = theColModel.editableOptions ? theColModel.editableOptions
 				: {};
 		var options = $.extend({}, tableEditableOptions, colEditableOptions);
-		var userCallback = options['callback'];
-		options['callback'] = function(value, settings) {
+		var userCallback = options.callback;
+		options.callback = function(value, settings) {
 			if (userCallback) {
 				userCallback.apply(value, settings);
 			}
-			var onChange = theTable.data('jqEditableTable')['onChange'];
+			var onChange = theTable.data('jqEditableTable').onChange;
 			if (onChange) {
 				onChange.apply(theTable);
 			}
@@ -37,7 +39,8 @@
 		newCell.keydown(function(e) {
 			if (e.shiftKey) {
 				var code = e.which;
-				var cellToEditAfter = undefined;
+				var cellToEditAfter;
+				var thisIndex;
 				switch (code) {
 				case 37: // DOM_VK_LEFT handle left
 					// input -> form -> td -> previous td
@@ -48,7 +51,7 @@
 					}
 					break;
 				case 38: // DOM_VK_UP handle up
-					var thisIndex = getChildrenIndex(e.target.parentNode.parentNode);
+					thisIndex = getChildrenIndex(e.target.parentNode.parentNode);
 					// input -> form -> td -> tr -> previous tr -> td with same
 					// index
 					cellToEditAfter = e.target.parentNode.parentNode.parentNode.previousSibling.children[thisIndex];
@@ -62,7 +65,7 @@
 					}
 					break;
 				case 40: // DOM_VK_DOWN handle down
-					var thisIndex = getChildrenIndex(e.target.parentNode.parentNode);
+					thisIndex = getChildrenIndex(e.target.parentNode.parentNode);
 					// input -> form -> td -> tr -> next tr -> td with same index
 					cellToEditAfter = e.target.parentNode.parentNode.parentNode.nextSibling.children[thisIndex];
 					break;
@@ -78,7 +81,7 @@
 	}
 	var methods = {
 		init : function(options) {
-			var colModels = options['colModel'];
+			var colModels = options.colModel;
 			if (colModels) {
 				var colIndex;
 				for (colIndex in colModels) {
@@ -124,14 +127,14 @@
 			// Append the new column model into colModel list
 			var data = this.data('jqEditableTable');
 			if (data) {
-				var colModels = data['colModel'];
+				var colModels = data.colModel;
 				var colIndex;
 				for(colIndex in colModels) {
 					if (colModels[colIndex].name === aColModel.name) {
 						// There is already such a column thus do not add it
 						// just update colModel
 						colModels[colIndex] = $.extend({}, aColModel, colModels[colIndex]);
-						this.data('jqEditableTable')['colModel'] = colModels;
+						this.data('jqEditableTable').colModel = colModels;
 						return this;
 					}
 				}
@@ -140,8 +143,8 @@
 			
 			var thRow = this.jqEditableTable('getTHeadRow');
 			// Create thead/tr/th
-			var colLabel = aColModel['label'] === undefined ? aColModel['name']
-					: aColModel['label'];
+			var colLabel = aColModel.label === undefined ? aColModel.name
+					: aColModel.label;
 			thRow.append($('<th>').append(colLabel));
 
 			// Add td to all existing rows
@@ -149,7 +152,7 @@
 			var tbodies = this.jqEditableTable('getTBody');
 			var allTRs = tbodies.children('tr');
 			if (allTRs.length !== 0) {
-				var editableOptions = this.data('jqEditableTable')['editableOptions'];
+				var editableOptions = this.data('jqEditableTable').editableOptions;
 				var theTable = this;
 				allTRs.each(function(index, value) {
 					$(value).append(makeNewEditableCell(theTable,
@@ -163,11 +166,11 @@
 		},
 		addRow : function addRow(someData) {
 			var tbodies = this.jqEditableTable('getTBody');
-			var editableOptions = this.data('jqEditableTable')['editableOptions'];
+			var editableOptions = this.data('jqEditableTable').editableOptions;
 			if (Object.prototype.toString.call(someData) === '[object Array]') {
 				var colIndex;
 				var theColModel;
-				var colModels = this.data('jqEditableTable')['colModel'];
+				var colModels = this.data('jqEditableTable').colModel;
 				var newRow = $('<tr>');
 				for (colIndex in someData) {
 					theColModel = colModels[colIndex];
@@ -187,14 +190,14 @@
 				}
 				tbodies.append(newRow);
 			} else if (Object.prototype.toString.call(someData) === '[object Object]') {
-				this.jqEditableTable('addRow', this.data('jqEditableTable')['colModel'].map(function(aColModel) {
+				this.jqEditableTable('addRow', this.data('jqEditableTable').colModel.map(function(aColModel) {
 					return someData[aColModel.name] ? someData[aColModel.name] : null;
 				}));
 			}
 		},
 		getColumnsName : function() {
-			return this.data('jqEditableTable')['colModel'].map(function(aColModel) {
-				return aColModel['name'];
+			return this.data('jqEditableTable').colModel.map(function(aColModel) {
+				return aColModel.name;
 			});
 		},
 		getRowData : function() {
